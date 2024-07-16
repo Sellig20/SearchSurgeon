@@ -1,8 +1,9 @@
 import { Router } from 'express';
+import express from 'express';
 import { Request, Response } from "express";
 import { surgeonDisplayArrayController } from './controller/surgeonDisplayArrayController';
 
-const router = Router();
+const router = express.Router();
 
 router.get('/allSurgeons',
     surgeonDisplayArrayController.getAllSurgeons);

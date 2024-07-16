@@ -8,12 +8,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.BACKEND_PORT;
 
-connection();
+// connection();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use(express.json());
 
 console.log("PORT ENV VARIABLE => ", process.env.BACKEND_PORT);
 
@@ -23,6 +21,12 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/searchsurgeon', router);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+connection().then(() => {
+  app.listen(3000, () => {
+      console.log(`\n\nServeur démarré sur le port ${PORT}`);
+  });
 });
+
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });

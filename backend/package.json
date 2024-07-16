@@ -4,14 +4,15 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "mongodb": "6.8",
-    "mongoose": "^8.5.1"
+    "mongoose": "^8.5.1",
+    "node": "^18.20.4"
   },
   "name": "search_surgeon",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsc && node dist/src/app",
+    "start": "npx tsc && node dist/src/server",
     "dev": "npx ts-node ./src/server.ts"
   },
   "keywords": [],
