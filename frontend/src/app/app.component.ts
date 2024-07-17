@@ -1,13 +1,29 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ApiService } from './api.service';
+import { SurgeonListComponent } from './surgeon-list/surgeon-list.component';
+import { RouterModule } from '@angular/router';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  imports: [RouterModule, SurgeonListComponent],
+  standalone: true
+  // styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'frontend';
+export class AppComponent implements OnInit {
+  message: string | undefined;
+
+  constructor(private apiService: ApiService) {}
+
+  ngOnInit(): void {
+    this.apiService.getHello().subscribe({
+      next: (response) => {
+        this.message = response;
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
+  }
 }

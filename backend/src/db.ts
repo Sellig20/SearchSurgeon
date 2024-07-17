@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const mongoURI = 'mongodb+srv://jeanne:Sellig20@cluster0.fjzp4df.mongodb.net/su';
 
-const connection = async () => {
+const connectionToMongo = async () => {
     try {
         await mongoose.connect(mongoURI, {
             useNewUrlParser: true,
@@ -15,4 +15,4 @@ const connection = async () => {
 }
 
 
-export default connection;
+export default connectionToMongo;

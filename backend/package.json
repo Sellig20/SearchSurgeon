@@ -1,32 +1,29 @@
 {
-  "dependencies": {
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "mongodb": "6.8",
-    "mongoose": "^8.5.1",
-    "node": "^18.20.4"
-  },
-  "name": "search_surgeon",
+  "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsc && node dist/src/server",
-    "dev": "npx ts-node ./src/server.ts"
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "build": "tsc -p .",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@types/dotenv": "^8.2.0",
-    "@types/express": "^4.17.21",
-    "@types/mongoose": "^5.11.97",
-    "@types/node": "^20.14.10",
-    "dotenv": "^16.4.5",
+    "@types/node": "^20.14.11",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/mongoose": "^5.11.97",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.5.1"
   }
 }

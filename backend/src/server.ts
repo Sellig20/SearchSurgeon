@@ -1,32 +1,30 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
-import connection from './db';
-import dotenv from 'dotenv';
 import router from "./routes";
+import connectionToMongo from './db';
 
-dotenv.config();
 const app = express();
-const PORT = process.env.BACKEND_PORT;
+const PORT = process.env.PORT || 3000;
 
-// connection();
+connectionToMongo();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const cors = require('cors');
 
-console.log("PORT ENV VARIABLE => ", process.env.BACKEND_PORT);
+app.use(cors({
+    origin: 'http://localhost:4200',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }));
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Home!');
+// Routes
+app.get('/', (req, res) => {
+    res.json({ message: "Hello BOUSERIEEEEE!" });
 });
 
 app.use('/searchsurgeon', router);
 
-connection().then(() => {
-  app.listen(3000, () => {
-      console.log(`\n\nServeur démarré sur le port ${PORT}`);
-  });
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });

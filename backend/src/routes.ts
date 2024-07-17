@@ -3,9 +3,10 @@ import express from 'express';
 import { Request, Response } from "express";
 import { surgeonDisplayArrayController } from './controller/surgeonDisplayArrayController';
 
-const router = express.Router();
+const router = Router();
 
 router.get('/allSurgeons',
-    surgeonDisplayArrayController.getAllSurgeons);
+    surgeonDisplayArrayController.getAllSurgeons
+);
 
 export default router;
