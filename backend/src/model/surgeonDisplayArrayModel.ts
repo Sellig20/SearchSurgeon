@@ -4,7 +4,7 @@ import mongoURI from '../db';
 export interface SurgeonInterface {
     surgeon: string;
     specialty: string;
-    anesthesist: string;
+    anesthsiste: string;
     nurse1: string;
     nurse2: string;
     roomNumber: number;
@@ -25,7 +25,7 @@ export interface SurgeonInterface {
         const dbSchema = new mongoose.Schema({
             surgeon: { type: String, required: true },
             specialty: { type: String, required: true },
-            anesthsist: { type: String, required: true },
+            anesthsiste: { type: String, required: true },
             nurse1: { type: String, required: true },
             nurse2: { type: String, required: true },
             roomNumber: { type: Number, required: true },

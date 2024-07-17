@@ -24,7 +24,7 @@ export class SurgeonListComponent implements OnInit {
     this.surgeonService.getSurgeons().subscribe({
       next: (data) => {
         this.surgeons = data;
-        console.log("taille tableau : ", this.surgeons);
+        console.log("tableau : ", this.surgeons);
       },
       error: (error) => {
         console.error('Error fetching surgeons', error);
