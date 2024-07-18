@@ -10,6 +10,7 @@ export interface surgeonInterface {
     nurse2: string;
     roomNumber: number;
     intervention: string;
+    interventionTop: string;
 }
 
 export interface roomInterface {

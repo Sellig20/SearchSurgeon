@@ -43,7 +43,8 @@ export class SurgeonListComponent implements OnInit {
           nurse1: 'Nurse1',
           nurse2: 'Nurse2',
           roomNumber: surgeon.favoriteRoom,
-          intervention: surgeon.interventionNb
+          intervention: surgeon.interventionNb,
+          interventionTop: surgeon.interventionTop
         }));
 
         this.filteredSurgeons = [...this.surgeonsFinalTab];

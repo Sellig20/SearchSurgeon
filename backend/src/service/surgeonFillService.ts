@@ -75,18 +75,39 @@ export class surgeonFillService {
 
     static async getTopIntervention(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, string>> {
         try {
-            const mapTopSurgeon = new Map<string, string>();
-
+            // const finalMapTopIntervention = new Map<string, string>();
+            const interventionMap = new Map<string, string>();
             surgeonSortedArray.forEach(surgeon => {
-                console.log("*********** surgeon is ", surgeon.surgeon);
-                surgeon.interventions.forEach((intervention: { interventionTitle: any; }, index: number) => {
+                let interventionTab: string[] = [];
+                surgeon.interventions.forEach((intervention: { interventionTitle: string; }, index: number) => {
                     const interventionNature = intervention.interventionTitle;
-                    console.log(" ----> ", interventionNature);
+                    interventionTab.push(interventionNature);
                 })
+                interventionTab.sort((a, b) => a.localeCompare(b));
+                console.log(" surgeon : ", surgeon.surgeon);
+                // interventionTab.forEach(index => {
+                //     let previous: string | null = null;
+                //     console.log(" => ", index);
+                // })
+                let i = 0;
+                let maxI: string | null = null;
+                while(interventionTab[i]) {
+                    let j = i + 1;
+                    if (j) {
+                        if (interventionTab[j] === interventionTab[i]) {
+                            maxI = interventionTab[i];
+                        }
+                    }
+                    i++;
+                }
+                if (maxI === null) {
+                    maxI = interventionTab[0];
+                }
+                console.log("max intrevention is ", maxI);
+                interventionMap.set(surgeon.surgeon, maxI);
             })
-
-
-            return mapTopSurgeon;
+            // console.log(" =>=>=> ", interventionMap);
+            return interventionMap;
         } catch (err) {
             console.error('Error getTopIntervention:', err);
             throw new Error('Error getTopIntervention');
@@ -137,21 +158,28 @@ export class surgeonFillService {
 
             let surgeonTopInterv = new Map<string, string>();
             surgeonTopInterv = await this.getTopIntervention(req, res, BigMap);
+            const interventionTopOne = Array.from(surgeonTopInterv).map(([key, value]) => ({ key, value }));
 
-            let surgeonsVector: { surgeon: string, interventionNb: number, favoriteRoom: number }[] = [];
-            
+
+            let surgeonsVector: { 
+                surgeon: string, 
+                interventionNb: number, 
+                favoriteRoom: number,
+                interventionTop: string,
+            }[] = [];
             
             topSurgeonSortedTimes.forEach(topSurgeon => {
                 let favoriteRoom = favoriteRoomSurgeon.find(roomSurgeon => roomSurgeon.key === topSurgeon.key);
-                if (favoriteRoom) {
-
-                surgeonsVector.push({
-                    surgeon: topSurgeon.key,
-                    interventionNb: topSurgeon.value,
-                    favoriteRoom: favoriteRoom.value
-                  });
+                let topIntervention = interventionTopOne.find(intervention => intervention.key === topSurgeon.key);
+                if (favoriteRoom && topIntervention) {
+                    surgeonsVector.push({
+                        surgeon: topSurgeon.key,
+                        interventionNb: topSurgeon.value,
+                        favoriteRoom: favoriteRoom.value,
+                        interventionTop: topIntervention.value,
+                    });
                 }
-        });
+            });
             return res.status(200).json({message : 'sorted surgeons ok', surgeonsVector});
 
         } catch (err) {
