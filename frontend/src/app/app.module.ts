@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from './app.routes';
 import { RouterModule } from '@angular/router';
 import { SurgeonListComponent } from './surgeon-list/surgeon-list.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { SurgeonListComponent } from './surgeon-list/surgeon-list.component';
     CommonModule,
     RouterModule.forRoot([]),
     AppRoutingModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

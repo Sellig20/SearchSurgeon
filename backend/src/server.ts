@@ -17,14 +17,12 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
   }));
 
-// Routes
 app.get('/', (req, res) => {
     res.json({ message: "Hello BOUSERIEEEEE!" });
 });
 
 app.use('/searchsurgeon', router);
 
-// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

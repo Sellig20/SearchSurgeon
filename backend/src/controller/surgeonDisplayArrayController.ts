@@ -9,7 +9,7 @@ export class surgeonDisplayArrayController {
 
             console.log("je suis dans le controller");
             const allSurgeons: SurgeonInterface[] = await dbModel.find();
-            console.log("\n\nnombre de surgeons -> ", allSurgeons.length);
+            // console.log("\n\nnombre de surgeons -> ", allSurgeons.length);
 
             const sortedSurgeons = surgeonFillService.surgeonSeparated(req, res, allSurgeons);
             // res.status(200).json({message: 'All surgeons from db ok', sortedSurgeons});

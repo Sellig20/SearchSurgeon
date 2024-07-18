@@ -1,0 +1,35 @@
+body {
+    background-color:#5ea2e6;
+}
+
+head {
+    background-color:#5ea2e6;
+}
+
+h3 {
+    font-family: 'Dosis';
+    font-size: 50px;
+}
+
+.align-right {
+    text-align: right;
+  }
+
+.align-middle {
+text-align: center;
+}
+
+.container {
+    padding: 20px;
+  }
+  
+.table {
+    margin-top: 20px;
+}
+
+.custom-rounded-table {
+    border-radius: 0.2%;
+    overflow: hidden;
+    font-family: 'Dosis';
+    font-size: larger;
+}

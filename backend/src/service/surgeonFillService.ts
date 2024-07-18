@@ -2,34 +2,32 @@ import { Request, Response } from "express";
 import { SurgeonInterface } from "../model/surgeonDisplayArrayModel";
 
 export class surgeonFillService {
-    static async getTopSurgeon(req: Request, res: Response, surgeonArray: any[]) {
+    static async getTopSurgeon(req: Request, res: Response, surgeonArray: any[]): Promise<Map<string, number>> {
         try {
+            const mapTopSurgeon = new Map<string, number>();
             const sortedTopSurgeons = surgeonArray.sort((a, b) => b.interventions.length - a.interventions.length);
             sortedTopSurgeons.forEach(surgeon => {
                 const nbInterv = surgeon.interventions.length;
-                console.log(`Le chirurgien ${surgeon.surgeon} a travaillé ${nbInterv} fois`);
+                mapTopSurgeon.set(surgeon.surgeon, nbInterv);
             });
-            return sortedTopSurgeons;
+            return mapTopSurgeon;
         } catch (err) {
-            return res.status(500).json({ message : 'surgeonFillService.ts | getTopSurgeonFunction error : ', err });
+            console.error('Error getTopSurgeon:', err);
+            throw new Error('Error getTopSurgeon');
         }
     }
 
-    static async getTopRoomNumber(req: Request, res: Response, surgeonSortedArray: any[]) {
+    static async getTopRoomNumber(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, number>> {
         try {
-            const SurgeonMaxRoom = new Map<string, number>();
-            surgeonSortedArray.forEach(surgeon => {
+            const promises = surgeonSortedArray.map(async (surgeon) => {
                 const mapRoomNb = new Map<number, number>();
                 surgeon.interventions.sort((a: { roomNumber: number }, b: { roomNumber: number }) => a.roomNumber - b.roomNumber);
                 let previousRoomNumber: number | null = null;
                 let count = 0;
                 surgeon.interventions.forEach((intervention: { roomNumber: any; }, index: number) => {
                     const roomNb = intervention.roomNumber;
-                    // console.log(`\nLa room de ${surgeon.surgeon} est : ${previousRoomNumber}`);
                     if (index < surgeon.interventions.length - 1) {
                         if (previousRoomNumber !== roomNb) {
-                            // console.log("count == ", count);
-                            // console.log("----");
                             if (previousRoomNumber !== null)
                                 mapRoomNb.set(previousRoomNumber, count);
                             count = 0;
@@ -38,24 +36,18 @@ export class surgeonFillService {
                     }
                     else if (index == surgeon.interventions.length - 1) {
                         if (previousRoomNumber !== roomNb) {
-                            // console.log("count == ", count);
-                            // console.log(`\nLa roomanshow de ${surgeon.surgeon} est : ${roomNb}`);
                             if (previousRoomNumber !== null)
                                 mapRoomNb.set(previousRoomNumber, count);
                             count = 1;
                             mapRoomNb.set(roomNb, count);
-                            // console.log("count == ", count);
-                            // console.log("----");
                         } else {
                             count +=1;
-                            // console.log("count == ", count);
                             mapRoomNb.set(roomNb, count);
                         }
                     }
                     previousRoomNumber = roomNb;
                 });
-                // console.log("*******************************************");
-                // console.log(`*******************  MRN  ${surgeon.surgeon} ***************************** : `, mapRoomNb);
+
                 let maxValue = 0;
                 let maxKey = 0;
                 mapRoomNb.forEach((value, key) => {
@@ -63,13 +55,41 @@ export class surgeonFillService {
                         maxValue = value;
                         maxKey = key
                     }
-                    // console.log("sa salle preférée est : ", maxKey, " ", surgeon.surgeon, " a travaillé ", maxValue, " fois");
-                    SurgeonMaxRoom.set(surgeon.surgeon, maxKey);
-                })
-                console.log(" ====> ", SurgeonMaxRoom);
-            });
+                });
+                    return { surgeon: surgeon.surgeon, maxKey };
+                    // SurgeonMaxRoom.set(surgeon.surgeon, maxKey);
+                });
+                const results = await Promise.all(promises);
+                const SurgeonMaxRoom = new Map<string, number>();
+                results.forEach(result => {
+                    SurgeonMaxRoom.set(result.surgeon, result.maxKey);
+                });
+
+                return SurgeonMaxRoom;
+
         } catch (err) {
-            return res.status(500).json({ message : 'surgeonFillService.ts | getTopRoomNumber error : ', err });
+            console.error('Error getTopRoomNumber:', err);
+            throw new Error('Error getTopRoomNumber');
+        }
+    }
+
+    static async getTopIntervention(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, string>> {
+        try {
+            const mapTopSurgeon = new Map<string, string>();
+
+            surgeonSortedArray.forEach(surgeon => {
+                console.log("*********** surgeon is ", surgeon.surgeon);
+                surgeon.interventions.forEach((intervention: { interventionTitle: any; }, index: number) => {
+                    const interventionNature = intervention.interventionTitle;
+                    console.log(" ----> ", interventionNature);
+                })
+            })
+
+
+            return mapTopSurgeon;
+        } catch (err) {
+            console.error('Error getTopIntervention:', err);
+            throw new Error('Error getTopIntervention');
         }
     }
 
@@ -104,20 +124,36 @@ export class surgeonFillService {
                     surgeonMap.set(surgeon.surgeon, existingSurgeon);
                 }
             });
-            console.log("unique surgeon is : ", uniSurgeons);
-            const uniScount = uniSurgeons.size;
-            console.log("==> Nombre de chirurgiens différents : ", uniScount);
+
             const BigMap = Array.from(surgeonMap.values());
-            // console.log(" BIG MAP => ", BigMap);
-            // console.log(" BIG MAP => ", surgeonMap.entries());
-            // BigMap.forEach(surgeon => {
-            //     console.log(`\nSurgeon: ${surgeon.surgeon}`);
-            //     console.table(surgeon.interventions);
-            // });
-            this.getTopSurgeon(req, res, BigMap);
-            this.getTopRoomNumber(req, res, BigMap);
-            return res.status(200).json({message : 'sorted surgeons ok', BigMap});
-            // return BigMap;
+
+            let surgeonTop = new Map<string, number>();
+            surgeonTop = await this.getTopSurgeon(req, res, BigMap);
+            const topSurgeonSortedTimes = Array.from(surgeonTop).map(([key, value]) => ({ key, value }));
+
+            let surgeonMaxRoom = new Map<string, number>();
+            surgeonMaxRoom = await this.getTopRoomNumber(req, res, BigMap);
+            const favoriteRoomSurgeon = Array.from(surgeonMaxRoom).map(([key, value]) => ({ key, value }));
+
+            let surgeonTopInterv = new Map<string, string>();
+            surgeonTopInterv = await this.getTopIntervention(req, res, BigMap);
+
+            let surgeonsVector: { surgeon: string, interventionNb: number, favoriteRoom: number }[] = [];
+            
+            
+            topSurgeonSortedTimes.forEach(topSurgeon => {
+                let favoriteRoom = favoriteRoomSurgeon.find(roomSurgeon => roomSurgeon.key === topSurgeon.key);
+                if (favoriteRoom) {
+
+                surgeonsVector.push({
+                    surgeon: topSurgeon.key,
+                    interventionNb: topSurgeon.value,
+                    favoriteRoom: favoriteRoom.value
+                  });
+                }
+        });
+            return res.status(200).json({message : 'sorted surgeons ok', surgeonsVector});
+
         } catch (err) {
             return res.status(500).json({ message : 'surgeonFillService.ts | surgeonSeparatedFunction error : ', err });
         }
