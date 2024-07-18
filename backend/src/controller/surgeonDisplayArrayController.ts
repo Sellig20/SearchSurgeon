@@ -13,6 +13,7 @@ export class surgeonDisplayArrayController {
 
             const sortedSurgeons = surgeonFillService.surgeonSeparated(req, res, allSurgeons);
             // res.status(200).json({message: 'All surgeons from db ok', sortedSurgeons});
+            return sortedSurgeons;
         } catch (err) {
             return res.status(500).json({ message : 'Server backend error : ', err });
         }

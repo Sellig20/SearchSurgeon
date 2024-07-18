@@ -17,39 +17,56 @@ export class surgeonFillService {
 
     static async getTopRoomNumber(req: Request, res: Response, surgeonSortedArray: any[]) {
         try {
+            const SurgeonMaxRoom = new Map<string, number>();
             surgeonSortedArray.forEach(surgeon => {
+                const mapRoomNb = new Map<number, number>();
                 surgeon.interventions.sort((a: { roomNumber: number }, b: { roomNumber: number }) => a.roomNumber - b.roomNumber);
                 let previousRoomNumber: number | null = null;
-                // const mapRoomNb = new Map<number, number>();
-                console.log("----");
                 let count = 0;
                 surgeon.interventions.forEach((intervention: { roomNumber: any; }, index: number) => {
                     const roomNb = intervention.roomNumber;
-                    let nextRoomNb: number | null = null;
-                    console.log(`\nLa room de ${surgeon.surgeon} est : ${previousRoomNumber}`);
+                    // console.log(`\nLa room de ${surgeon.surgeon} est : ${previousRoomNumber}`);
                     if (index < surgeon.interventions.length - 1) {
-                        nextRoomNb = surgeon.interventions[index + 1].roomNb;
+                        if (previousRoomNumber !== roomNb) {
+                            // console.log("count == ", count);
+                            // console.log("----");
+                            if (previousRoomNumber !== null)
+                                mapRoomNb.set(previousRoomNumber, count);
+                            count = 0;
+                        }
+                        count += 1;
                     }
-                    if (index == surgeon.interventions.length - 1) {
-                        // console.log(`\nLa room de ${surgeon.surgeon} est : ${roomNb} pour ${count + 1} interv`);
-                        console.log("count == ", count + 1);
-                        // console.log("----");
-                        // count++;
+                    else if (index == surgeon.interventions.length - 1) {
+                        if (previousRoomNumber !== roomNb) {
+                            // console.log("count == ", count);
+                            // console.log(`\nLa roomanshow de ${surgeon.surgeon} est : ${roomNb}`);
+                            if (previousRoomNumber !== null)
+                                mapRoomNb.set(previousRoomNumber, count);
+                            count = 1;
+                            mapRoomNb.set(roomNb, count);
+                            // console.log("count == ", count);
+                            // console.log("----");
+                        } else {
+                            count +=1;
+                            // console.log("count == ", count);
+                            mapRoomNb.set(roomNb, count);
+                        }
                     }
-                    else if (previousRoomNumber !== roomNb) {
-                        // console.log(`\nLa room de ${surgeon.surgeon} est : ${roomNb} pour ${count + 1} interv`);
-                        console.log("count == ", count + 1);
-                        console.log("----");
-                        count = 0;
-
-                    } else {
-                        count++;
-                    }
-                    
                     previousRoomNumber = roomNb;
-                    
                 });
-                console.log("************************************************");
+                // console.log("*******************************************");
+                // console.log(`*******************  MRN  ${surgeon.surgeon} ***************************** : `, mapRoomNb);
+                let maxValue = 0;
+                let maxKey = 0;
+                mapRoomNb.forEach((value, key) => {
+                    if (maxValue === null || value > maxValue) {
+                        maxValue = value;
+                        maxKey = key
+                    }
+                    // console.log("sa salle preférée est : ", maxKey, " ", surgeon.surgeon, " a travaillé ", maxValue, " fois");
+                    SurgeonMaxRoom.set(surgeon.surgeon, maxKey);
+                })
+                console.log(" ====> ", SurgeonMaxRoom);
             });
         } catch (err) {
             return res.status(500).json({ message : 'surgeonFillService.ts | getTopRoomNumber error : ', err });
@@ -100,6 +117,7 @@ export class surgeonFillService {
             this.getTopSurgeon(req, res, BigMap);
             this.getTopRoomNumber(req, res, BigMap);
             return res.status(200).json({message : 'sorted surgeons ok', BigMap});
+            // return BigMap;
         } catch (err) {
             return res.status(500).json({ message : 'surgeonFillService.ts | surgeonSeparatedFunction error : ', err });
         }
