@@ -1,7 +1,7 @@
 <body>
 <div class="container mt-5">
     <div class="row justify-content-center">
-      <div class="col-md-20">
+      <div class="col-md-28">
         <h3 class="text-center mb-4">SURGEONS LIST</h3>
 
         <div class="input-group mb-3">
@@ -16,9 +16,9 @@
         <tr>
           <th scope="col" class="align-middle">Rank</th>
           <th scope="col" class="align-middle">Name</th>
-          <th scope="col" class="align-middle">intervention.s number</th>
+          <th scope="col" class="align-middle">total intervention.s</th>
           <th scope="col" class="align-middle">Speciality</th>
-          <th scope="col" class="align-middle">Anesthesist</th>
+          <th scope="col" class="align-middle">Anaesthetist</th>
           <th scope="col" class="align-middle">Nurse 1</th>
           <th scope="col" class="align-middle">Nurse 2</th>
           <th scope="col" class="align-middle">Favorite room</th>
@@ -35,7 +35,7 @@
           <td class="align-middle">{{ surgeon.nurse1 }}</td>
           <td class="align-middle">{{ surgeon.nurse2 }}</td>
           <td class="align-right">{{ surgeon.roomNumber }}</td>
-          <td class="align-middle">{{ surgeon.interventionTop }}</td>
+          <td class="align-middle">{{ cutText(surgeon.interventionTop) }}</td>
         </tr>
     </tbody>
   </table>

@@ -17,6 +17,85 @@ export class surgeonFillService {
         }
     }
 
+    static async getTopCoworker(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, string>> {
+        try {
+            const mapBestiiiies = new Map<string, string>();
+            surgeonSortedArray.forEach(surgeon => {
+                console.log("\n********** je suis ", surgeon.surgeon);
+                    let nurse1Tab: string[] = [];
+                    surgeon.interventions.forEach((intervention: { nurse1: string; }) => {
+                    const nursy = intervention.nurse1;
+                    nurse1Tab.push(nursy);
+                    })
+
+                    let nurse2Tab: string[] = [];
+                    surgeon.interventions.forEach((intervention: { nurse2: string; }) => {
+                    const nursy2 = intervention.nurse2;
+                    nurse2Tab.push(nursy2);
+                    })
+
+                    let anaesthetistTab: string[] = [];
+                    surgeon.interventions.forEach((intervention: { anesthsiste: string; }) => {
+                    const nursy = intervention.anesthsiste;
+                    anaesthetistTab.push(nursy);
+                    })
+
+                    nurse1Tab.sort((a, b) => a.localeCompare(b));
+                    nurse2Tab.sort((a, b) => a.localeCompare(b));
+                    anaesthetistTab.sort((a, b) => a.localeCompare(b));
+
+                    // console.log("my nurses 1 : ", nurse1Tab);
+                    console.log("my nurses 2 : ", nurse2Tab);
+                    console.log("my anaesthetist : ", anaesthetistTab);
+                    let maxNurse1 = this.getMax(nurse1Tab);
+                    console.log("besssst nursiiiii is ", maxNurse1);
+                    let maxNurse2 = this.getMax(nurse2Tab);
+                    console.log("best nurse 2 is ", maxNurse2);
+                    let maxAnaesthesist = this.getMax(anaesthetistTab);
+                    console.log("Best aenaesthesiste LOL is ", maxAnaesthesist);
+                })
+                return mapBestiiiies;
+            } catch (err) {
+            console.error('Error getTopCoworker:', err);
+            throw new Error('Error getTopCoworker');
+        }
+    }
+
+    static getMax(array: string[]): string {
+        const map = new Map<string, number>();
+        let i = 0;
+        let count = 0;
+        while (array[i]) {
+            let j = i + 1;
+            let maxCoworker: string | null = null;
+            if (array[j]) {
+                // console.log("je lis ---> ", array[i], " (mais mon prochain est : ", array[j], ")");
+                if (array[j] === array[i]) {
+                    count += 1;
+                }
+                else {
+                    map.set(array[i], count + 1);
+                    count = 0;
+                }
+            }
+            else {
+                // console.log("je lis ---> ", array[i], " (et j'ai pas de prochain)");
+                map.set(array[i], count + 1);
+            }
+            i++;
+        }
+        let maxValue = 0;
+        let maxKey: string = "null";
+        map.forEach((value, key) => {
+            if (maxValue === null || value > maxValue) {
+                maxValue = value;
+                maxKey = key
+            }
+        });
+        return maxKey;
+    }
+
+    
     static async getTopRoomNumber(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, number>> {
         try {
             const promises = surgeonSortedArray.map(async (surgeon) => {
@@ -103,7 +182,7 @@ export class surgeonFillService {
                 if (maxI === null) {
                     maxI = interventionTab[0];
                 }
-                console.log("max intrevention is ", maxI);
+                // console.log("max intrevention is ", maxI);
                 interventionMap.set(surgeon.surgeon, maxI);
             })
             // console.log(" =>=>=> ", interventionMap);
@@ -160,6 +239,8 @@ export class surgeonFillService {
             surgeonTopInterv = await this.getTopIntervention(req, res, BigMap);
             const interventionTopOne = Array.from(surgeonTopInterv).map(([key, value]) => ({ key, value }));
 
+            let bestNurse1 = new Map<string, string>();
+            bestNurse1 = await this.getTopCoworker(req, res, BigMap);
 
             let surgeonsVector: { 
                 surgeon: string, 

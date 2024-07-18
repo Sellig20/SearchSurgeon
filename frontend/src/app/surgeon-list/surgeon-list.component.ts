@@ -88,6 +88,14 @@ export class SurgeonListComponent implements OnInit {
     this.searchText = '';
     this.search();
   }
+
+  cutText(text: string): string {
+    const maxSize = 28;
+    if (text.length > maxSize) {
+      return text.substring(0, maxSize) + '...';
+    }
+    return text;
+  }
 }
 
 
