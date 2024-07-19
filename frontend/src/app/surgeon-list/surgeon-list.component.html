@@ -32,10 +32,10 @@
           <td class="align-right">{{ surgeon.intervention }}</td>
           <td class="align-middle">{{ surgeon.specialty }}</td>
           <td class="align-middle">{{ surgeon.anesthsiste }}</td>
-          <td class="align-middle">{{ surgeon.nurse1 }}</td>
-          <td class="align-middle">{{ surgeon.nurse2 }}</td>
+          <td class="align-middle">{{ cutText(surgeon.nurse1, 15) }}</td>
+          <td class="align-middle">{{ cutText(surgeon.nurse2, 15) }}</td>
           <td class="align-right">{{ surgeon.roomNumber }}</td>
-          <td class="align-middle">{{ cutText(surgeon.interventionTop) }}</td>
+          <td class="align-middle">{{ cutText(surgeon.interventionTop, 28) }}</td>
         </tr>
     </tbody>
   </table>

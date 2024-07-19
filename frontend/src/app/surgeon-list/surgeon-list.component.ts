@@ -39,9 +39,9 @@ export class SurgeonListComponent implements OnInit {
         this.surgeonsFinalTab = data.surgeonsVector.map((surgeon: any) => ({
           surgeon: surgeon.surgeon,
           specialty: 'Specialty',
-          anesthsiste: 'Anesthesiste',
-          nurse1: 'Nurse1',
-          nurse2: 'Nurse2',
+          anesthsiste: surgeon.anaesthesistTop,
+          nurse1: surgeon.nurse1Top,
+          nurse2: surgeon.nurse2Top,
           roomNumber: surgeon.favoriteRoom,
           intervention: surgeon.interventionNb,
           interventionTop: surgeon.interventionTop
@@ -89,8 +89,7 @@ export class SurgeonListComponent implements OnInit {
     this.search();
   }
 
-  cutText(text: string): string {
-    const maxSize = 28;
+  cutText(text: string, maxSize: number): string {
     if (text.length > maxSize) {
       return text.substring(0, maxSize) + '...';
     }

@@ -17,47 +17,70 @@ export class surgeonFillService {
         }
     }
 
-    static async getTopCoworker(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, string>> {
+    static async getTopCoworker(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, [string, string, string]>> {
         try {
-            const mapBestiiiies = new Map<string, string>();
+            let returnZ: Map<string, [string, string, string]> = new Map();
             surgeonSortedArray.forEach(surgeon => {
-                console.log("\n********** je suis ", surgeon.surgeon);
-                    let nurse1Tab: string[] = [];
-                    surgeon.interventions.forEach((intervention: { nurse1: string; }) => {
-                    const nursy = intervention.nurse1;
-                    nurse1Tab.push(nursy);
-                    })
+            // console.log("\n********** je suis ", surgeon.surgeon);
+                let nurse1Tab: string[] = [];
+                surgeon.interventions.forEach((intervention: { nurse1: string; }) => {
+                const nursy = intervention.nurse1;
+                nurse1Tab.push(nursy);
+                })
 
-                    let nurse2Tab: string[] = [];
-                    surgeon.interventions.forEach((intervention: { nurse2: string; }) => {
-                    const nursy2 = intervention.nurse2;
-                    nurse2Tab.push(nursy2);
-                    })
+                let nurse2Tab: string[] = [];
+                surgeon.interventions.forEach((intervention: { nurse2: string; }) => {
+                const nursy2 = intervention.nurse2;
+                nurse2Tab.push(nursy2);
+                })
 
-                    let anaesthetistTab: string[] = [];
-                    surgeon.interventions.forEach((intervention: { anesthsiste: string; }) => {
-                    const nursy = intervention.anesthsiste;
-                    anaesthetistTab.push(nursy);
-                    })
+                let anaesthetistTab: string[] = [];
+                surgeon.interventions.forEach((intervention: { anesthsiste: string; }) => {
+                const nursy = intervention.anesthsiste;
+                anaesthetistTab.push(nursy);
+                })
 
-                    nurse1Tab.sort((a, b) => a.localeCompare(b));
-                    nurse2Tab.sort((a, b) => a.localeCompare(b));
-                    anaesthetistTab.sort((a, b) => a.localeCompare(b));
+                nurse1Tab.sort((a, b) => a.localeCompare(b));
+                nurse2Tab.sort((a, b) => a.localeCompare(b));
+                anaesthetistTab.sort((a, b) => a.localeCompare(b));
 
                     // console.log("my nurses 1 : ", nurse1Tab);
-                    console.log("my nurses 2 : ", nurse2Tab);
-                    console.log("my anaesthetist : ", anaesthetistTab);
-                    let maxNurse1 = this.getMax(nurse1Tab);
-                    console.log("besssst nursiiiii is ", maxNurse1);
-                    let maxNurse2 = this.getMax(nurse2Tab);
-                    console.log("best nurse 2 is ", maxNurse2);
-                    let maxAnaesthesist = this.getMax(anaesthetistTab);
-                    console.log("Best aenaesthesiste LOL is ", maxAnaesthesist);
+                    // console.log("my nurses 2 : ", nurse2Tab);
+                    // console.log("my anaesthetist : ", anaesthetistTab);
+                let maxNurse1 = this.getMax(nurse1Tab);
+                // console.log("besssst nursiiiii is ", maxNurse1);
+                let maxNurse2 = this.getMax(nurse2Tab);
+                // console.log("best nurse 2 is ", maxNurse2);
+                let maxAnaesthesist = this.getMax(anaesthetistTab);
+                // console.log("Best aenaesthesiste LOL is ", maxAnaesthesist);
+                returnZ.set(surgeon.surgeon, [maxNurse1, maxNurse2, maxAnaesthesist]);
+                // mapBestiiiies.push(maxNurse1, "--", maxNurse2, "--", maxAnaesthesist);
                 })
-                return mapBestiiiies;
+                return returnZ;
             } catch (err) {
             console.error('Error getTopCoworker:', err);
             throw new Error('Error getTopCoworker');
+        }
+    }
+
+    static async getTopInterventio(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, [string]>> {
+        try {
+            let returnTab: Map<string, [string]> = new Map();
+            surgeonSortedArray.forEach(surgeon => {
+                let interventionTopTab: string[] = [];
+                surgeon.interventions.forEach((intervention: { interventionTitle: string; }) => {
+                const interventionTitle = intervention.interventionTitle;
+                interventionTopTab.push(interventionTitle);
+                })
+                
+                interventionTopTab.sort((a, b) => a.localeCompare(b));
+                let maxInterventionTop = this.getMax(interventionTopTab);
+                returnTab.set(surgeon.surgeon, [maxInterventionTop]);
+                })
+                return returnTab;
+            } catch (err) {
+            console.error('Error getTopIntervention:', err);
+            throw new Error('Error getTopIntervention');
         }
     }
 
@@ -152,46 +175,47 @@ export class surgeonFillService {
         }
     }
 
-    static async getTopIntervention(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, string>> {
-        try {
-            // const finalMapTopIntervention = new Map<string, string>();
-            const interventionMap = new Map<string, string>();
-            surgeonSortedArray.forEach(surgeon => {
-                let interventionTab: string[] = [];
-                surgeon.interventions.forEach((intervention: { interventionTitle: string; }, index: number) => {
-                    const interventionNature = intervention.interventionTitle;
-                    interventionTab.push(interventionNature);
-                })
-                interventionTab.sort((a, b) => a.localeCompare(b));
-                console.log(" surgeon : ", surgeon.surgeon);
-                // interventionTab.forEach(index => {
-                //     let previous: string | null = null;
-                //     console.log(" => ", index);
-                // })
-                let i = 0;
-                let maxI: string | null = null;
-                while(interventionTab[i]) {
-                    let j = i + 1;
-                    if (j) {
-                        if (interventionTab[j] === interventionTab[i]) {
-                            maxI = interventionTab[i];
-                        }
-                    }
-                    i++;
-                }
-                if (maxI === null) {
-                    maxI = interventionTab[0];
-                }
-                // console.log("max intrevention is ", maxI);
-                interventionMap.set(surgeon.surgeon, maxI);
-            })
-            // console.log(" =>=>=> ", interventionMap);
-            return interventionMap;
-        } catch (err) {
-            console.error('Error getTopIntervention:', err);
-            throw new Error('Error getTopIntervention');
-        }
-    }
+    // static async getTopIntervention(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, string>> {
+    //     try {
+    //         // const finalMapTopIntervention = new Map<string, string>();
+    //         const interventionMap = new Map<string, string>();
+    //         surgeonSortedArray.forEach(surgeon => {
+    //             console.log("je suis ===================================================> ", surgeon.surgeon)
+    //             let interventionTab: string[] = [];
+    //             surgeon.interventions.forEach((intervention: { interventionTitle: string; }, index: number) => {
+    //                 const interventionNature = intervention.interventionTitle;
+    //                 interventionTab.push(interventionNature);
+    //             })
+                
+    //             interventionTab.sort((a, b) => a.localeCompare(b));
+    //             // interventionTab.forEach(index => {
+    //             //     let previous: string | null = null;
+    //             //     console.log(" => ", index);
+    //             // })
+    //             let i = 0;
+    //             let maxI: string | null = null;
+    //             while(interventionTab[i]) {
+    //                 let j = i + 1;
+    //                 if (j) {
+    //                     if (interventionTab[j] === interventionTab[i]) {
+    //                         maxI = interventionTab[i];
+    //                     }
+    //                 }
+    //                 i++;
+    //             }
+    //             if (maxI === null) {
+    //                 maxI = interventionTab[0];
+    //             }
+    //             // console.log("max intrevention is ", maxI);
+    //             interventionMap.set(surgeon.surgeon, maxI);
+    //         })
+    //         // console.log(" =>=>=> ", interventionMap);
+    //         return interventionMap;
+    //     } catch (err) {
+    //         console.error('Error getTopIntervention:', err);
+    //         throw new Error('Error getTopIntervention');
+    //     }
+    // }
 
     static async surgeonSeparated(req: Request, res: Response, allSurgeons: SurgeonInterface[]) {
         try {
@@ -235,29 +259,50 @@ export class surgeonFillService {
             surgeonMaxRoom = await this.getTopRoomNumber(req, res, BigMap);
             const favoriteRoomSurgeon = Array.from(surgeonMaxRoom).map(([key, value]) => ({ key, value }));
 
-            let surgeonTopInterv = new Map<string, string>();
-            surgeonTopInterv = await this.getTopIntervention(req, res, BigMap);
-            const interventionTopOne = Array.from(surgeonTopInterv).map(([key, value]) => ({ key, value }));
+            // let surgeonTopInterv = new Map<string, string>();
+            // surgeonTopInterv = await this.getTopIntervention(req, res, BigMap);
+            // const interventionTopOne = Array.from(surgeonTopInterv).map(([key, value]) => ({ key, value }));
 
-            let bestNurse1 = new Map<string, string>();
-            bestNurse1 = await this.getTopCoworker(req, res, BigMap);
+            let bestCoworkersList: Map<string, [string, string, string]> = new Map();
+            bestCoworkersList = await this.getTopCoworker(req, res, BigMap);
+            // console.log("SIZEEEE =>", bestCoworkersList);
+            // bestCoworkersList.forEach(([value1, value2, value3], key) => {
+            //     console.log(" surgeon -----> ", key);
+            //     console.log(" \nnures1 -----> ", value1);
+            //     console.log(" \nnures2 -----> ", value2);
+            //     console.log(" \nanae -----> ", value3);
+            //     console.log("*************************");
+            // })
+            let bestIntervention: Map<string, [string]> = new Map();
+            bestIntervention = await this.getTopInterventio(req, res, BigMap);
 
             let surgeonsVector: { 
                 surgeon: string, 
                 interventionNb: number, 
                 favoriteRoom: number,
                 interventionTop: string,
+                nurse1Top: string,
+                nurse2Top: string,
+                anaesthesistTop: string,
             }[] = [];
             
             topSurgeonSortedTimes.forEach(topSurgeon => {
                 let favoriteRoom = favoriteRoomSurgeon.find(roomSurgeon => roomSurgeon.key === topSurgeon.key);
-                let topIntervention = interventionTopOne.find(intervention => intervention.key === topSurgeon.key);
-                if (favoriteRoom && topIntervention) {
+                let topIntervention = bestIntervention.get(topSurgeon.key)?.[0];
+                let nurse1Top = bestCoworkersList.get(topSurgeon.key)?.[0];
+                let nurse2Top = bestCoworkersList.get(topSurgeon.key)?.[1];
+                let anaesthesistTop = bestCoworkersList.get(topSurgeon.key)?.[2];
+
+                if (favoriteRoom && topIntervention 
+                    && nurse1Top && nurse2Top && anaesthesistTop) {
                     surgeonsVector.push({
                         surgeon: topSurgeon.key,
                         interventionNb: topSurgeon.value,
                         favoriteRoom: favoriteRoom.value,
-                        interventionTop: topIntervention.value,
+                        interventionTop: topIntervention,
+                        nurse1Top: nurse1Top,
+                        nurse2Top: nurse2Top,
+                        anaesthesistTop: anaesthesistTop
                     });
                 }
             });
