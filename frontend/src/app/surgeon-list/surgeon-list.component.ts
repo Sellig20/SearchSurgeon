@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SurgeonService, interventionInterface, roomInterface, surgeonInterface } from '../surgeon.service';
+import { SurgeonService, surgeonInterface } from '../surgeon.service';
 import { CommonModule, DecimalPipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -33,9 +33,6 @@ export class SurgeonListComponent implements OnInit {
   fetchSurgeons(): void {
     this.surgeonService.getSurgeons().subscribe({
       next: (data: any) => {
-
-        console.log('Data received from service: ', data.topSurgeonSortedTimes);
-
         this.surgeonsFinalTab = data.surgeonsVector.map((surgeon: any) => ({
           surgeon: surgeon.surgeon,
           specialty: surgeon.speciality,
