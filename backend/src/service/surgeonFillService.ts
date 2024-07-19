@@ -275,7 +275,7 @@ export class surgeonFillService {
             return res.status(200).json({message : 'sorted surgeons ok', surgeonsVector});
 
         } catch (err) {
-            return res.status(500).json({ message : 'surgeonFillService.ts | surgeonSeparatedFunction error : ', err });
+            return res.status(400).json({ message : 'surgeonFillService.ts | surgeonSeparatedFunction error : ', err });
         }
     }
 }
