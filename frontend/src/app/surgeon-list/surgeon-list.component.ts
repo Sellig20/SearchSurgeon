@@ -38,7 +38,7 @@ export class SurgeonListComponent implements OnInit {
 
         this.surgeonsFinalTab = data.surgeonsVector.map((surgeon: any) => ({
           surgeon: surgeon.surgeon,
-          specialty: 'Specialty',
+          specialty: surgeon.speciality,
           anesthsiste: surgeon.anaesthesistTop,
           nurse1: surgeon.nurse1Top,
           nurse2: surgeon.nurse2Top,
@@ -96,19 +96,3 @@ export class SurgeonListComponent implements OnInit {
     return text;
   }
 }
-
-
-//   fetchSurgeons(): void {
-//     this.surgeonService.getSurgeons().subscribe({
-//       next: (data: any) => {
-//         console.log('Data received from service:', data);
-//         this.favoriteRoomSurgeon = data.favoriteRoomSurgeon;
-//         this.topSurgeonSortedTimes = data.topSurgeonSortedTimes;
-        
-//       },
-//       error: (error) => {
-//         console.error('Error fetching surgeons', error);
-//       }
-//     });
-//   }
-// }

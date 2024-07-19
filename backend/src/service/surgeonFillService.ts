@@ -5,6 +5,7 @@ export class surgeonFillService {
     static async getTopSurgeon(req: Request, res: Response, surgeonArray: any[]): Promise<Map<string, number>> {
         try {
             const mapTopSurgeon = new Map<string, number>();
+            //sort tab to join all same name and count easier
             const sortedTopSurgeons = surgeonArray.sort((a, b) => b.interventions.length - a.interventions.length);
             sortedTopSurgeons.forEach(surgeon => {
                 const nbInterv = surgeon.interventions.length;
@@ -17,11 +18,31 @@ export class surgeonFillService {
         }
     }
 
+    static async getTopSpecialty(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, [string]>> {
+        try {
+            let returnTab: Map<string, [string]> = new Map();
+            surgeonSortedArray.forEach(surgeon => {
+                let specialtyTopTab: string[] = [];
+                surgeon.interventions.forEach((intervention: { specialty: string; }) => {
+                    const specialty = intervention.specialty;
+                    specialtyTopTab.push(specialty);
+                })
+                //sort tab to join all same intervention and count easier
+                specialtyTopTab.sort((a, b) => a.localeCompare(b));
+                let maxSpe = this.getMax(specialtyTopTab);
+                returnTab.set(surgeon.surgeon, [maxSpe]);
+                })
+                return returnTab;
+            } catch (err) {
+            console.error('Error getTopSpeciality:', err);
+            throw new Error('Error getTopSpeciality');
+        }
+    }
+
     static async getTopCoworker(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, [string, string, string]>> {
         try {
-            let returnZ: Map<string, [string, string, string]> = new Map();
+            let returnTab: Map<string, [string, string, string]> = new Map();
             surgeonSortedArray.forEach(surgeon => {
-            // console.log("\n********** je suis ", surgeon.surgeon);
                 let nurse1Tab: string[] = [];
                 surgeon.interventions.forEach((intervention: { nurse1: string; }) => {
                 const nursy = intervention.nurse1;
@@ -40,39 +61,34 @@ export class surgeonFillService {
                 anaesthetistTab.push(nursy);
                 })
 
+                //sort tab to join all same nurse1, nurse2 and anaesthesist names and count easier
                 nurse1Tab.sort((a, b) => a.localeCompare(b));
                 nurse2Tab.sort((a, b) => a.localeCompare(b));
                 anaesthetistTab.sort((a, b) => a.localeCompare(b));
 
-                    // console.log("my nurses 1 : ", nurse1Tab);
-                    // console.log("my nurses 2 : ", nurse2Tab);
-                    // console.log("my anaesthetist : ", anaesthetistTab);
                 let maxNurse1 = this.getMax(nurse1Tab);
-                // console.log("besssst nursiiiii is ", maxNurse1);
                 let maxNurse2 = this.getMax(nurse2Tab);
-                // console.log("best nurse 2 is ", maxNurse2);
                 let maxAnaesthesist = this.getMax(anaesthetistTab);
-                // console.log("Best aenaesthesiste LOL is ", maxAnaesthesist);
-                returnZ.set(surgeon.surgeon, [maxNurse1, maxNurse2, maxAnaesthesist]);
-                // mapBestiiiies.push(maxNurse1, "--", maxNurse2, "--", maxAnaesthesist);
+                returnTab.set(surgeon.surgeon, [maxNurse1, maxNurse2, maxAnaesthesist]);
                 })
-                return returnZ;
+            return returnTab;
             } catch (err) {
             console.error('Error getTopCoworker:', err);
             throw new Error('Error getTopCoworker');
         }
     }
 
-    static async getTopInterventio(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, [string]>> {
+    static async getTopIntervention(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, [string]>> {
         try {
             let returnTab: Map<string, [string]> = new Map();
             surgeonSortedArray.forEach(surgeon => {
                 let interventionTopTab: string[] = [];
                 surgeon.interventions.forEach((intervention: { interventionTitle: string; }) => {
+                
                 const interventionTitle = intervention.interventionTitle;
                 interventionTopTab.push(interventionTitle);
                 })
-                
+                //sort tab to join all same intervention and count easier
                 interventionTopTab.sort((a, b) => a.localeCompare(b));
                 let maxInterventionTop = this.getMax(interventionTopTab);
                 returnTab.set(surgeon.surgeon, [maxInterventionTop]);
@@ -88,11 +104,9 @@ export class surgeonFillService {
         const map = new Map<string, number>();
         let i = 0;
         let count = 0;
-        while (array[i]) {
+        while (array[i]) { //Loop to compare index and index + 1
             let j = i + 1;
-            let maxCoworker: string | null = null;
             if (array[j]) {
-                // console.log("je lis ---> ", array[i], " (mais mon prochain est : ", array[j], ")");
                 if (array[j] === array[i]) {
                     count += 1;
                 }
@@ -102,13 +116,13 @@ export class surgeonFillService {
                 }
             }
             else {
-                // console.log("je lis ---> ", array[i], " (et j'ai pas de prochain)");
                 map.set(array[i], count + 1);
             }
             i++;
         }
         let maxValue = 0;
         let maxKey: string = "null";
+        //get the value most present in the tab
         map.forEach((value, key) => {
             if (maxValue === null || value > maxValue) {
                 maxValue = value;
@@ -123,6 +137,7 @@ export class surgeonFillService {
         try {
             const promises = surgeonSortedArray.map(async (surgeon) => {
                 const mapRoomNb = new Map<number, number>();
+                //sort tab to join all same room and count easier
                 surgeon.interventions.sort((a: { roomNumber: number }, b: { roomNumber: number }) => a.roomNumber - b.roomNumber);
                 let previousRoomNumber: number | null = null;
                 let count = 0;
@@ -159,14 +174,12 @@ export class surgeonFillService {
                     }
                 });
                     return { surgeon: surgeon.surgeon, maxKey };
-                    // SurgeonMaxRoom.set(surgeon.surgeon, maxKey);
                 });
                 const results = await Promise.all(promises);
                 const SurgeonMaxRoom = new Map<string, number>();
                 results.forEach(result => {
                     SurgeonMaxRoom.set(result.surgeon, result.maxKey);
                 });
-
                 return SurgeonMaxRoom;
 
         } catch (err) {
@@ -174,48 +187,6 @@ export class surgeonFillService {
             throw new Error('Error getTopRoomNumber');
         }
     }
-
-    // static async getTopIntervention(req: Request, res: Response, surgeonSortedArray: any[]): Promise<Map<string, string>> {
-    //     try {
-    //         // const finalMapTopIntervention = new Map<string, string>();
-    //         const interventionMap = new Map<string, string>();
-    //         surgeonSortedArray.forEach(surgeon => {
-    //             console.log("je suis ===================================================> ", surgeon.surgeon)
-    //             let interventionTab: string[] = [];
-    //             surgeon.interventions.forEach((intervention: { interventionTitle: string; }, index: number) => {
-    //                 const interventionNature = intervention.interventionTitle;
-    //                 interventionTab.push(interventionNature);
-    //             })
-                
-    //             interventionTab.sort((a, b) => a.localeCompare(b));
-    //             // interventionTab.forEach(index => {
-    //             //     let previous: string | null = null;
-    //             //     console.log(" => ", index);
-    //             // })
-    //             let i = 0;
-    //             let maxI: string | null = null;
-    //             while(interventionTab[i]) {
-    //                 let j = i + 1;
-    //                 if (j) {
-    //                     if (interventionTab[j] === interventionTab[i]) {
-    //                         maxI = interventionTab[i];
-    //                     }
-    //                 }
-    //                 i++;
-    //             }
-    //             if (maxI === null) {
-    //                 maxI = interventionTab[0];
-    //             }
-    //             // console.log("max intrevention is ", maxI);
-    //             interventionMap.set(surgeon.surgeon, maxI);
-    //         })
-    //         // console.log(" =>=>=> ", interventionMap);
-    //         return interventionMap;
-    //     } catch (err) {
-    //         console.error('Error getTopIntervention:', err);
-    //         throw new Error('Error getTopIntervention');
-    //     }
-    // }
 
     static async surgeonSeparated(req: Request, res: Response, allSurgeons: SurgeonInterface[]) {
         try {
@@ -259,22 +230,14 @@ export class surgeonFillService {
             surgeonMaxRoom = await this.getTopRoomNumber(req, res, BigMap);
             const favoriteRoomSurgeon = Array.from(surgeonMaxRoom).map(([key, value]) => ({ key, value }));
 
-            // let surgeonTopInterv = new Map<string, string>();
-            // surgeonTopInterv = await this.getTopIntervention(req, res, BigMap);
-            // const interventionTopOne = Array.from(surgeonTopInterv).map(([key, value]) => ({ key, value }));
+            let bestIntervention: Map<string, [string]> = new Map();
+            bestIntervention = await this.getTopIntervention(req, res, BigMap);
 
             let bestCoworkersList: Map<string, [string, string, string]> = new Map();
             bestCoworkersList = await this.getTopCoworker(req, res, BigMap);
-            // console.log("SIZEEEE =>", bestCoworkersList);
-            // bestCoworkersList.forEach(([value1, value2, value3], key) => {
-            //     console.log(" surgeon -----> ", key);
-            //     console.log(" \nnures1 -----> ", value1);
-            //     console.log(" \nnures2 -----> ", value2);
-            //     console.log(" \nanae -----> ", value3);
-            //     console.log("*************************");
-            // })
-            let bestIntervention: Map<string, [string]> = new Map();
-            bestIntervention = await this.getTopInterventio(req, res, BigMap);
+
+            let topSpe: Map<string, [string]> = new Map();
+            topSpe = await this.getTopSpecialty(req, res, BigMap);
 
             let surgeonsVector: { 
                 surgeon: string, 
@@ -284,6 +247,7 @@ export class surgeonFillService {
                 nurse1Top: string,
                 nurse2Top: string,
                 anaesthesistTop: string,
+                speciality: string,
             }[] = [];
             
             topSurgeonSortedTimes.forEach(topSurgeon => {
@@ -292,8 +256,9 @@ export class surgeonFillService {
                 let nurse1Top = bestCoworkersList.get(topSurgeon.key)?.[0];
                 let nurse2Top = bestCoworkersList.get(topSurgeon.key)?.[1];
                 let anaesthesistTop = bestCoworkersList.get(topSurgeon.key)?.[2];
+                let speciality = topSpe.get(topSurgeon.key)?.[0];
 
-                if (favoriteRoom && topIntervention 
+                if (favoriteRoom && topIntervention && speciality
                     && nurse1Top && nurse2Top && anaesthesistTop) {
                     surgeonsVector.push({
                         surgeon: topSurgeon.key,
@@ -302,7 +267,8 @@ export class surgeonFillService {
                         interventionTop: topIntervention,
                         nurse1Top: nurse1Top,
                         nurse2Top: nurse2Top,
-                        anaesthesistTop: anaesthesistTop
+                        anaesthesistTop: anaesthesistTop,
+                        speciality: speciality,
                     });
                 }
             });
