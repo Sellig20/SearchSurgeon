@@ -30,4 +30,6 @@ Now you can `make` int the terminal !
 
 App on -> "[localhost:4200:](http://localhost:4200/)"
 
+If there is any problem, I am of course at your disposal.
+
 Thank you for your time !
