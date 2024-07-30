@@ -1,4 +1,4 @@
-#Welcome on the Search Surgeons app !#
+Welcome on the Search Surgeons app !
 
 To make this project works, you need to :
     - gitclone the repository,
