@@ -1,8 +1,8 @@
 # Welcome on the Search Surgeons app ! #
 
 To make this project works, you need to :
-    - gitclone the repository,
-    - launch Mongo Compass and connect to : 
+    * gitclone the repository,
+    * launch Mongo Compass and connect to : 
 
 Backend : Expressjs server on port:3000
 Frontend : Angular port:4200
