@@ -9,7 +9,7 @@ Frontend : Angular port:4200
 DB : MongoDB
 
 To connect to my database :
-    Here is my mongoURI = 'mongodb+srv://jeanne:Sellig20@cluster0.fjzp4df.mongodb.net/su'
+    Here is my mongoURI = ask me
     The Access List Entry allows any IP addresses (0.0.0./0).
     /su is the database, /searches is the collection where the .csv file is imported.
 
